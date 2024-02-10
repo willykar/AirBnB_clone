@@ -1,4 +1,4 @@
-#!/usr/bin/env/python3
+#!/usr/bin/env/ python3
 """Defines a base_model model"""
 from uuid import uuid4
 from datetime import datetime
