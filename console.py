@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Defines a console module"""
 
+
 import cmd
 import models
 from models.base_model import BaseModel
+from models import storage
 
 class HBNBCommand(cmd.Cmd):
     """Defines the HBNBCcOMMAND subclass that inherits from cmd.Cmd"""
@@ -93,67 +95,77 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, arg):
         """Prints all string representations of all instances,
         optionally filtered by class"""
-        args = arg.split()
-        obj_list = []
-        if len(args) == 0:
-            obj_dict = models.storage.all()
-        elif args[0] in HBNBCommand.__valid_classes:
-            obj_dict = models.storage.all()
-        else:
-            print("** class doesn't exist **")
-            return False
-        for key in obj_dict:
-            obj_list.append(str(obj_dict[key]))
+        if not arg:
+            stor_obj = storage.all()
+            print([i[key].__str__() for key in stor_obj])
+            return
+        try:
+            args = line.split(" ")
+            if args[0] not in HBNBCommand.__valid_classes:
+                return
+            stor_obj = storage.all(eval(args[0]))
+            print([stor_obj[key].__str__() for key in stor_obj])
 
-        print("[", ", ".join(obj_list), "]")
+        except NameError:
+            print("** class doesn't exist **")
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id by
         adding or updating attribute (save the change into the
         JSON file). """
-        args = parse(arg)
-        objdict = storage.all()
 
-        if len(args) == 0:
-            print("** class name missing **")
-            return False
-        if args[0] not in HBNBCommand.__valid_classes:
-            print("** class doesn't exist **")
-            return False
-        if len(args) == 1:
-            print("** instance id missing **")
-            return False
-        if "{}.{}".format(args[0], args[1]) not in objdict.keys():
-            print("** no instance found **")
-            return False
-        if len(args) == 2:
-            print("** attribute name missing **")
-            return False
-        if len(args) == 3:
+        try:
+            if not arg:
+                raise SyntaxError()
+            my_list = split(arg, " ")
+            if my_list[0] not in HBNBCommand.__valid_classes:
+                raise NameError()
+            if len(my_list) < 2:
+                raise IndexError()
+            objects = storage.all()
+            key = my_list[0] + '.' + my_list[1]
+            if key not in objects:
+                raise KeyError()
+            if len(my_list) < 3:
+                raise AttributeError()
+            if len(my_list) < 4:
+                raise ValueError()
+            v = objects[key]
             try:
-                type(eval(args[2])) != dict
-            except NameError:
-                print("** value missing **")
-                return False
+                v.__dict__[my_list[2]] = eval(my_list[3])
+            except Exception:
+                v.__dict__[my_list[2]] = my_list[3]
+                v.save()
 
-        if len(args) == 4:
-            obj = objdict["{}.{}".format(args[0], args[1])]
-            if args[2] in obj.__class__.__dict__.keys():
-                valtype = type(obj.__class__.__dict__[args[2]])
-                obj.__dict__[args[2]] = valtype(args[3])
-            else:
-                obj.__dict__[args[2]] = args[3]
-        elif type(eval(args[2])) == dict:
-            obj = objdict["{}.{}".format(args[0], args[1])]
-            for k, v in eval(args[2]).items():
-                if (k in obj.__class__.__dict__.keys() and
-                        type(obj.__class__.__dict__[k]) in {str, int, float}):
-                    valtype = type(obj.__class__.__dict__[k])
-                    obj.__dict__[k] = valtype(v)
-                else:
-                    obj.__dict__[k] = v
-        storage.save()
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
+            print("** class doesn't exist **")
+        except IndexError:
+            print("** instance id missing **")
+        except KeyError:
+            print("** no instance found **")
+        except AttributeError:
+            print("** attribute name missing **")
+        except ValueError:
+            print("** value missing **")
 
-
+    def count(self, arg):
+        """
+        A method to count the number of instances of a class
+        """
+        counter = 0
+        try:
+            my_list = split(arg, " ")
+            if my_list[0] not in HBNBCommand.__valid_classes:
+                raise NameError()
+            objects = storage.all()
+            for key in objects:
+                name = key.split('.')
+                if name[0] == my_list[0]:
+                    counter += 1
+            print(counter)
+        except NameError:
+            print("** class doesn't exist **")
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
