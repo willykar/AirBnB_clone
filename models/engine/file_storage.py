@@ -4,6 +4,7 @@
 import json
 from models.base_model import BaseModel
 
+
 class FileStorage:
     """Represents a FileStorage class"""
 
@@ -27,8 +28,8 @@ class FileStorage:
             json.dump(new_dict, f)
 
     def reload(self):
-        """deserializes the JSON file to __objects (only if the JSON
-        file (__file_path) exists ; otherwise, do nothing. If the 
+        """deserializes the JSON file to __objects (only if the JSOn
+        file (__file_path) exists ; otherwise, do nothing. If the
         file doesn’t exist, no exception should be raised)
         """
         try:
