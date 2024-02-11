@@ -155,19 +155,12 @@ class HBNBCommand(cmd.Cmd):
         """
         A method to count the number of instances of a class
         """
-        counter = 0
-        try:
-            my_list = split(arg, " ")
-            if my_list[0] not in HBNBCommand.__valid_classes:
-                raise NameError()
-            objects = storage.all()
-            for key in objects:
-                name = key.split('.')
-                if name[0] == my_list[0]:
-                    counter += 1
-            print(counter)
-        except NameError:
-            print("** class doesn't exist **")
+        args = arg.split()
+        count = 0
+        for obj in models.storage.all().values():
+            if args[0] == obj.__class__.__name__:
+                count += 1
+        print(count)
 
 
 if __name__ == "__main__":
