@@ -47,22 +47,18 @@ class HBNBCommand(cmd.Cmd):
         """ Prints the string representation of an instance based
         on the class name and id"""
         args = arg.split()
-        class_name = args[0]
+        all_objects = models.storage.all()
         if len(args) == 0:
             print("** class name missing **")
+        elif args[0] not in HBNBCommand.__valid_classes:
+            print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
+        elif f"{args[0]}.{args[1]}" not in all_objects:
+            print("** no instance found **")
         else:
-            class_name = args[0]
-            if class_name not in HBNBCommand.__valid_classes:
-                print("** class doesn't exist **")
-            else:
-                key = "{}{}".format(args[0], args[1])
-                all_objects = models.storage.all()
-                if key not in all_objects:
-                    print("** no instance found **")
-                else:
-                    print(all_objects[key])
+            key = "{}.{}".format(args[0], args[1])
+            print(all_objects[key])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id
@@ -103,42 +99,49 @@ class HBNBCommand(cmd.Cmd):
     def do_update(self, arg):
         """Updates an instance based on the class name and id by
         adding or updating attribute (save the change into the
-        JSON file). """
-        try:
-            if not arg:
-                raise SyntaxError()
-            my_list = split(arg, " ")
-            if my_list[0] not in HBNBCommand.__valid_classes:
-                raise NameError()
-            if len(my_list) < 2:
-                raise IndexError()
-            objects = storage.all()
-            key = my_list[0] + '.' + my_list[1]
-            if key not in objects:
-                raise KeyError()
-            if len(my_list) < 3:
-                raise AttributeError()
-            if len(my_list) < 4:
-                raise ValueError()
-            v = objects[key]
-            try:
-                v.__dict__[my_list[2]] = eval(my_list[3])
-            except Exception:
-                v.__dict__[my_list[2]] = my_list[3]
-                v.save()
+        JSON file)"""
+        args = arg.split()
+        valid_obj = models.storage.all()
 
-        except SyntaxError:
+        if len(args) == 0:
             print("** class name missing **")
-        except NameError:
+            return False
+        if args[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
-        except IndexError:
+            return False
+        if len(args) == 1:
             print("** instance id missing **")
-        except KeyError:
+            return False
+        if f"{args[0]}.{args[1]}" not in valid_obj.keys():
             print("** no instance found **")
-        except AttributeError:
+            return False
+        if len(args) == 2:
             print("** attribute name missing **")
-        except ValueError:
-            print("** value missing **")
+            return False
+        if len(args) == 3:
+            try:
+                type(eval(args[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
+
+        if len(args) == 4:
+            obj = valid_obj["{}.{}".format(args[0], args[1])]
+            if args[2] in obj.__class__.__dict__.keys():
+                value_type = type(obj.__class__.__dict__[args[2]])
+                obj.__dict__[args[2]] = value_type(args[3])
+            else:
+                obj.__dict__[args[2]] = args[3]
+        elif type(eval(args[2])) == dict:
+            obj = valid_obj["{}.{}".format(args[0], args[1])]
+            for key, value in eval(args[2]).items():
+                if (key in obj.__class__.__dict__.keys() and
+                        type(obj.__class__.__dict__[key]) in {str, int, float}):
+                    value_type = type(obj.__class__.__dict__[key])
+                    obj.__dict__[key] = value_type(value)
+                else:
+                    obj.__dict__[k] = value
+        models.storage.save()
 
     def count(self, arg):
         """
