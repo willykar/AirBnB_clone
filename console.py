@@ -151,7 +151,7 @@ class HBNBCommand(cmd.Cmd):
                     obj.__dict__[key] = value
         models.storage.save()
 
-    def count(self, arg):
+    def do_count(self, arg):
         """
         A method to count the number of instances of a class
         """
