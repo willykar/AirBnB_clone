@@ -3,6 +3,7 @@
 
 
 import cmd
+import models
 from models.base_model import BaseModel
 from models import storage
 
@@ -46,53 +47,58 @@ class HBNBCommand(cmd.Cmd):
         """ Prints the string representation of an instance based
         on the class name and id"""
         args = arg.split()
+        class_name = args[0]
         if len(args) == 0:
             print("** class name missing **")
-        class_name = args[0]
-        elif class_name not in HBNBCommand.__valid_classes:
-            print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
         else:
-            key = "{}{}".format(args[0], args[1])
-            all_objects = models.storage.all()
-            if key not in all_objects:
-                print("** no instance found **")
+            class_name = args[0]
+            if class_name not in HBNBCommand.__valid_classes:
+                print("** class doesn't exist **")
             else:
-                print(all_objects[key])
+                key = "{}{}".format(args[0], args[1])
+                all_objects = models.storage.all()
+                if key not in all_objects:
+                    print("** no instance found **")
+                else:
+                    print(all_objects[key])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id
         (save the change into the JSON file)"""
 
         args = arg.split()
+        key = f"{args[0]}.{args[1]}"
+        all_objects = models.storage.all()
         if len(args) == 0:
             print("** class name missing **")
-        class_name = args[0]
-        elif class_name not in HBNBCommand.__valid_classes:
+        elif args[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
-            print("**instancce id missing **")
+            print("**instance id missing **")
+        elif key not in all_objects.keys():
+            print("** no instance found **")
         else:
-            all_objects = models.storage.save()
             del all_objects[key]
-            storage.save()
+            models.storage.save()
 
     def do_all(self, arg):
         """Prints all string representations of all
         instances,optionally filtered by class"""
         args = arg.split()
-        all_obj = storage.all()
-        if len(args) == 0:
-            for key in all_obj:
-                print(all_obj[key])
-        class_name = arg[0]
-        elif class_name not in HBNBCommand.__valid_classes:
+        all_obj = models.storage.all()
+
+        if len(args) > 0 and args[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
         else:
-            for key in all_obj.keys():
-                if key.startswith(args[0] + "."):
-                    print(all_obj[key])
+            valid_objs = []
+            for obj in all_obj.values():
+                if len(args) > 0 and args[0] == obj.__class__.__name__:
+                    valid_objs.append(obj.__str__())
+                elif len(args) == 0:
+                    valid_objs.append(obj.__str__())
+            print(valid_objs)
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id by
