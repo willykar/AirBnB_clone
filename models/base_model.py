@@ -7,8 +7,6 @@ import models
 
 class BaseModel:
     """Defines a BasdModel class"""
-
-    
     def __init__(self, *args, **kwargs):
         """Initializes an init method
 
