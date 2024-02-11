@@ -3,8 +3,8 @@
 
 import re
 import cmd
-import shlex
 import models
+from shlex import split
 from models.state import State
 from models.city import City
 from models.place import Place
