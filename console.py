@@ -141,7 +141,7 @@ class HBNBCommand(cmd.Cmd):
                     value_type = type(obj.__class__.__dict__[key])
                     obj.__dict__[key] = value_type(value)
                 else:
-                    obj.__dict__[k] = value
+                    obj.__dict__[key] = value
         models.storage.save()
 
     def count(self, arg):
