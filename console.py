@@ -3,6 +3,7 @@
 
 
 import cmd
+import shlex
 import models
 from models.base_model import BaseModel
 from models import storage
@@ -100,7 +101,7 @@ class HBNBCommand(cmd.Cmd):
         """Updates an instance based on the class name and id by
         adding or updating attribute (save the change into the
         JSON file)"""
-        args = arg.split()
+        args = shlex.split(arg)
         valid_obj = models.storage.all()
 
         if len(args) == 0:
