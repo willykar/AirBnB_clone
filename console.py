@@ -35,7 +35,7 @@ def parse(arg):
 class HBNBCommand(cmd.Cmd):
     """Defines the HBNBCcOMMAND subclass that inherits from cmd.Cmd"""
     prompt = "(hbnb) "
-  __valid_classes = {
+    __valid_classes = {
         "BaseModel",
         "User",
         "State",
