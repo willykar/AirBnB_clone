@@ -3,14 +3,15 @@
 
 
 import cmd
-import models
 from models.base_model import BaseModel
 from models import storage
+
 
 class HBNBCommand(cmd.Cmd):
     """Defines the HBNBCcOMMAND subclass that inherits from cmd.Cmd"""
     prompt = "(hbnb) "
-    __valid_classes = {"BaseModel", "User", "State", "City", "Place", "Amenity", "Review"}
+    __valid_classes = {"BaseModel", "User", "State", "City",
+                       "Place", "Amenity", "Review"}
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -35,7 +36,7 @@ class HBNBCommand(cmd.Cmd):
         class_name = arg.split()[0]
 
         if class_name not in HBNBCommand.__valid_classes:
-            print("** class name missing **")
+            print("** class doesn't exist **")
             return
         new_instance = BaseModel()
         new_instance.save()
@@ -47,22 +48,18 @@ class HBNBCommand(cmd.Cmd):
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
-            return
         class_name = args[0]
-        if class_name not in HBNBCommand.__valid_classes:
-             print("** class doesn't exist **")
-             return
-
-        if len(args) < 2:
+        elif class_name not in HBNBCommand.__valid_classes:
+            print("** class doesn't exist **")
+        elif len(args) == 1:
             print("** instance id missing **")
-            return
-
-        key = "{}{}".format(args[0], args[1])
-        all_objects = models.storage.all()
-        if key not in all_objects:
-            print("** no instance found **")
         else:
-            print(all_objects[key])
+            key = "{}{}".format(args[0], args[1])
+            all_objects = models.storage.all()
+            if key not in all_objects:
+                print("** no instance found **")
+            else:
+                print(all_objects[key])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and id
@@ -71,49 +68,36 @@ class HBNBCommand(cmd.Cmd):
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
-            return
-
         class_name = args[0]
-        if class_name not in HBNBCommand.__valid_classes:
+        elif class_name not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
-            return
-
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-
-        key = "{}{}".format(args[0], args[1])
-        all_objects = storage.all()
-
-        if key not in all_objects:
-            print("** no instance found **")
-
+        elif len(args) == 1:
+            print("**instancce id missing **")
         else:
+            all_objects = models.storage.save()
             del all_objects[key]
             storage.save()
 
     def do_all(self, arg):
-        """Prints all string representations of all instances,
-        optionally filtered by class"""
-        if not arg:
-            stor_obj = storage.all()
-            print([i[key].__str__() for key in stor_obj])
-            return
-        try:
-            args = line.split(" ")
-            if args[0] not in HBNBCommand.__valid_classes:
-                return
-            stor_obj = storage.all(eval(args[0]))
-            print([stor_obj[key].__str__() for key in stor_obj])
-
-        except NameError:
+        """Prints all string representations of all
+        instances,optionally filtered by class"""
+        args = arg.split()
+        all_obj = storage.all()
+        if len(args) == 0:
+            for key in all_obj:
+                print(all_obj[key])
+        class_name = arg[0]
+        elif class_name not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
+        else:
+            for key in all_obj.keys():
+                if key.startswith(args[0] + "."):
+                    print(all_obj[key])
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id by
         adding or updating attribute (save the change into the
         JSON file). """
-
         try:
             if not arg:
                 raise SyntaxError()
@@ -167,5 +151,7 @@ class HBNBCommand(cmd.Cmd):
             print(counter)
         except NameError:
             print("** class doesn't exist **")
+
+
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
