@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """Defines file_storage.py model"""
 
 import json
@@ -11,16 +11,8 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def all(self, cls=None):
+    def all(self):
         """returns the dictionary __objects"""
-        if cls is not None:
-            if type(cls) == str:
-                cls = eval(cls)
-            cls_dict = {}
-            for key, value in self.__objects.items():
-                if type(value) == cls:
-                    cls_dict[key] = value
-            return cls_dict
         return FileStorage.__objects
 
     def new(self, obj):
@@ -48,4 +40,4 @@ class FileStorage:
                     del i["__class__"]
                     self.new(eval(cls_name)(**i))
         except FileNotFoundError:
-            return
+            pass

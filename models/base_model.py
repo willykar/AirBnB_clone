@@ -1,4 +1,4 @@
-#!/usr/bin/env/ python3
+#!/usr/bin/python3
 """Defines a base_model model"""
 from uuid import uuid4
 from datetime import datetime
@@ -26,8 +26,8 @@ class BaseModel:
                 else:
                     self.__dict__[key] = value
 
-            else:
-                models.storage.new(self)
+        else:
+            models.storage.new(self)
 
     def save(self):
         """updates the public instance attribute updated_at with the
