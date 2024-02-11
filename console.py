@@ -91,18 +91,16 @@ class HBNBCommand(cmd.Cmd):
         instances,optionally filtered by class"""
         args = arg.split()
         all_obj = models.storage.all()
-        if len(args) == 0:
-            print("** class name missing **")
-            return
-
-        class_name = args[0]
-
-        if class_name not in HBNBCommand.__valid_classes:
+        if len(args) > 0 and args[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
-            return
-
-        class_instances = [str(obj) for obj in all_obj.values() if obj.__class__.__name__ == class_name]
-        print(class_instances)
+        else:
+            valid_objs = []
+            for obj in all_obj.values():
+                if len(args) > 0 and args[0] == obj.__class__.__name__:
+                    valid_objs.append(obj.__str__())
+                elif len(args) == 0:
+                    valid_objs.append(obj.__str__())
+            print(valid_objs)
 
 
     def do_update(self, arg):
