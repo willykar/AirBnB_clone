@@ -69,7 +69,6 @@ class HBNBCommand(cmd.Cmd):
         (save the change into the JSON file)"""
 
         args = arg.split()
-        key = f"{args[0]}.{args[1]}"
         all_objects = models.storage.all()
         if len(args) == 0:
             print("** class name missing **")
@@ -77,9 +76,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("**instance id missing **")
-        elif key not in all_objects.keys():
+        elif f"{args[0]}.{args[1]}" not in all_objects.keys():
             print("** no instance found **")
         else:
+            key = f"{args[0]}.{args[1]}"
             del all_objects[key]
             models.storage.save()
 
