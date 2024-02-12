@@ -45,7 +45,7 @@ class HBNBCommand(cmd.Cmd):
         "Review"
     }
 
-   def emptyline(self):
+    def emptyline(self):
         """Do nothing upon receiving an empty line."""
         pass
 
@@ -203,4 +203,4 @@ class HBNBCommand(cmd.Cmd):
 
 
 if __name__ == "__main__":
-    HBNBCommand().cmdloop(
+    HBNBCommand().cmdloop()
