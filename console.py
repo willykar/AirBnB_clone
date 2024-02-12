@@ -85,7 +85,7 @@ class HBNBCommand(cmd.Cmd):
         """Usage: create <class>
         Create a new class instance and print its id.
         """
-        args = arg.split()
+        args = parse(arg)
         if len(args) == 0:
             print("** class name missing **")
         elif args[0] not in HBNBCommand.__valid_classes:
@@ -98,7 +98,7 @@ class HBNBCommand(cmd.Cmd):
         """Usage: show <class> <id> or <class>.show(<id>)
         Display the string representation of a class instance of a given id.
         """
-        args = arg.split()
+        args = parse(arg)
         all_objects = storage.all()
         if len(args) == 0:
             print("** class name missing **")
@@ -114,7 +114,7 @@ class HBNBCommand(cmd.Cmd):
     def do_destroy(self, arg):
         """Usage: destroy <class> <id> or <class>.destroy(<id>)
         Delete a class instance of a given id."""
-        args = arg.split()
+        args = parse(arg)
         all_objects = storage.all()
         if len(args) == 0:
             print("** class name missing **")
@@ -132,7 +132,7 @@ class HBNBCommand(cmd.Cmd):
         """Usage: all or all <class> or <class>.all()
         Display string representations of all instances of a given class.
         If no class is specified, displays all instantiated objects."""
-        args = arg.split()
+        args = parse(arg)
         if len(args) > 0 and args[0] not in HBNBCommand.__valid_classes:
             print("** class doesn't exist **")
         else:
@@ -147,7 +147,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, arg):
         """Usage: count <class> or <class>.count()
         Retrieve the number of instances of a given class."""
-        args = arg.split()
+        args = parse(arg)
         count = 0
         for obj in storage.all().values():
             if args[0] == obj.__class__.__name__:
@@ -160,7 +160,7 @@ class HBNBCommand(cmd.Cmd):
        <class>.update(<id>, <dictionary>)
         Update a class instance of a given id by adding or updating
         a given attribute key/value pair or dictionary."""
-        args = shlex.split(arg)
+        args = parse(arg)
         all_objects = storage.all()
 
         if len(args) == 0:
